@@ -1,11 +1,51 @@
-import React from "react";
-import PropTypes from "prop-types";
+import React, { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import * as contactsOperations from '../../Redux/Contacts/contacts-operations'
 
 import { Form, Label, Btn } from "./ContactForm.styles";
 
-function ContactForm({ submit, change, number, name }) {
+const ContactForm = () => {
+  const [name, setName] = useState("");
+  const [number, setNumber] = useState("");
+
+  const contacts = useSelector((state) => state.contacts.contactItems.items);
+
+  const dispatch = useDispatch();
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    switch (name) {
+      case "name":
+        setName(value);
+        break;
+      case "number":
+        setNumber(value);
+        break;
+      default:
+        return;
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (contacts.find((contact) => contact.name.toLowerCase() === name.toLowerCase())) {
+      alert(`${name} is already in contacts`);
+      reset();
+      return;
+    }
+
+    dispatch(contactsOperations.fetchPostContacts({ name, number }));
+    reset();
+  };
+
+  const reset = () => {
+    setName("");
+    setNumber("");
+  };
+
   return (
-    <Form onSubmit={submit}>
+    <Form onSubmit={handleSubmit}>
       <Label>
         Name
         <input
@@ -14,7 +54,7 @@ function ContactForm({ submit, change, number, name }) {
           pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
           title="Имя может состоять только из букв, апострофа, тире и пробелов. Например Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan и т. п."
           required
-          onChange={change}
+          onChange={handleChange}
           value={name}
         />
       </Label>
@@ -27,19 +67,12 @@ function ContactForm({ submit, change, number, name }) {
           title="Номер телефона должен состоять цифр и может содержать пробелы, тире, круглые скобки и может начинаться с +"
           required
           value={number}
-          onChange={change}
+          onChange={handleChange}
         />
       </Label>
       <Btn type="submit">Add contact</Btn>
     </Form>
   );
 }
-
-ContactForm.propTypes = {
-  submit: PropTypes.func.isRequired,
-  change: PropTypes.func.isRequired,
-  number: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-};
 
 export default ContactForm;

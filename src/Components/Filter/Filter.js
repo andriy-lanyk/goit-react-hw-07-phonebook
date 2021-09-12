@@ -1,22 +1,26 @@
-import React from "react";
-import PropTypes from "prop-types";
+import { useSelector, useDispatch } from "react-redux";
+import * as contactsActions from '../../Redux/Contacts/contacts-actions'
+import { getAllContacts, getFilter } from '../../Redux/Contacts/contacts-selectors'
+
 import { Label, Message } from "./Filter.styles";
 
-const Filter = ({ change, filter, contacts }) => {
+const Filter = () => {
+  const filter = useSelector(getFilter);
+  const contacts = useSelector(getAllContacts);
+  const dispatch = useDispatch();
+
+    const handleChange = (e) => {
+    dispatch(contactsActions.filterContacts(e.target.value));
+  };
+
   return contacts.length !== 0 ? (
     <Label>
       Find contacts by Name
-      <input type="text" name="Find contact" value={filter} onChange={change} />
+      <input type="text" name="Find contact" value={filter} onChange={handleChange} />
     </Label>
   ) : (
     <Message>Your Phonebook don`t have contacts</Message>
   );
-};
-
-Filter.propTypes = {
-  change: PropTypes.func.isRequired,
-  filter: PropTypes.string.isRequired,
-  contacts: PropTypes.array.isRequired,
 };
 
 export default Filter;

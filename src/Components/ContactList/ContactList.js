@@ -1,10 +1,22 @@
-import React from "react";
-import PropTypes from "prop-types";
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import * as contactsOperations from '../../Redux/Contacts/contacts-operations';
+import { getAllContacts, getFilteredContacts } from '../../Redux/Contacts/contacts-selectors'
 import { Btn, ItemText, Item } from "./ContactListStyles";
 
-const ContactList = ({ contacts, visibleContacts, deleteElement }) => {
+const ContactList = () => {
+  const contacts = useSelector(getAllContacts);
+  const visibleContacts = useSelector(getFilteredContacts)
+
+  const dispatch = useDispatch();
+
+    useEffect(() => {
+    dispatch(contactsOperations.fetchGetContacts());
+    }, [dispatch]);
+  
+
   return (
-    contacts && (
+    contacts.length > 0 && (
       <ul>
         {visibleContacts.map(({ id, name, number }, i) => (
           <Item key={id}>
@@ -12,7 +24,7 @@ const ContactList = ({ contacts, visibleContacts, deleteElement }) => {
               {`${i + 1})    `}
               {name}: {number}
             </ItemText>
-            <Btn type="button" onClick={() => deleteElement(id)}>
+            <Btn type="button" onClick={() => dispatch(contactsOperations.fetchDeleteContacts(id))}>
               Delete
             </Btn>
           </Item>
@@ -20,12 +32,6 @@ const ContactList = ({ contacts, visibleContacts, deleteElement }) => {
       </ul>
     )
   );
-};
-
-ContactList.propTypes = {
-  contacts: PropTypes.array.isRequired,
-  visibleContacts: PropTypes.array.isRequired,
-  deleteElement: PropTypes.func.isRequired,
 };
 
 export default ContactList;

@@ -1,12 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
-import logger from "redux-logger";
-import contactsReduser from "./reduser";
+import contactsReducer from "./Contacts/contacts-reduser";
 
 const store = configureStore({
   reducer: {
-    contacts: contactsReduser,
+    contacts: contactsReducer,
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(logger),
 });
 
 export { store };
